@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Short URL</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/flat-ui.min.css" />
+        <style>
+            h4 {
+                text-align: center;
+                margin-bottom: 50px;
+            }
+
+            #result_container {
+                width: 400px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            #result_container > input {
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <section class="container">
+            <div class="well">
+                <h4>Make your short URL here</h4>
+
+                <div class="input-group">
+                  <input type="text" class="form-control">
+                  <div class="input-group-btn">
+                    <button type="button" class="btn btn-default">Short it</button>
+                  </div>
+                </div>
+            </div>
+
+            <div id="result_container">
+                <input type="text" class="form-control">
+            </div>
+        </section>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script>
+            $(function() {
+                var resultContainer = $('#result_container');
+                resultContainer.hide();
+
+                $('button').on('click', function() {
+                resultContainer.hide();
+                    $.ajax({
+                      type: "POST",
+                      url: '/api/v1/shorten',
+                      data: JSON.stringify({url: $('input').val()}),
+                      success: function(result) {
+                        var url = result.url;
+                        var input = resultContainer.find('input');
+                        resultContainer.show();
+                        input.val(url);
+                        input.select();
+                      },
+                      error: function(response) {
+                          var data = JSON.parse(response.responseText);
+                          alert(data.message);
+                      },
+                      contentType: "application/json",
+                      dataType: 'json'
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
